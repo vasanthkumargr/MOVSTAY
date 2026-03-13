@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -10,32 +10,24 @@ const Home = () => {
         navigate('/listings');
     };
 
-    const featuredPGs = [
-        {
-            id: "1",
-            name: "Sunrise Premium Hostel",
-            location: "Koramangala, Bangalore",
-            price: "₹12,000/mo",
-            rating: 4.8,
-            image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "2",
-            name: "Urban Nest PG",
-            location: "HSR Layout, Bangalore",
-            price: "₹15,000/mo",
-            rating: 4.6,
-            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "3",
-            name: "The Co-Living Space",
-            location: "Indiranagar, Bangalore",
-            price: "₹18,000/mo",
-            rating: 4.9,
-            image: "https://images.unsplash.com/photo-1502672260266-1c1e52ab0645?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        }
-    ];
+    const [featuredPGs, setFeaturedPGs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPGs = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/hostels');
+                const data = await res.json();
+                // Just take first 3 for featured on home
+                setFeaturedPGs(data.slice(0, 3));
+                setLoading(false);
+            } catch (err) {
+                console.error("Failed to fetch PGs:", err);
+                setLoading(false);
+            }
+        };
+        fetchPGs();
+    }, []);
 
     return (
         <div className="animate-fade-in">
@@ -83,28 +75,32 @@ const Home = () => {
                 </div>
 
                 <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', marginTop: '3rem' }}>
-                    {featuredPGs.map(pg => (
-                        <Link to={`/pg/${pg.id}`} key={pg.id} style={{ textDecoration: 'none' }}>
-                            <div className="glass-panel glass-panel-hover" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <div style={{ position: 'relative', height: '200px' }}>
-                                    <img src={pg.image} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                        <Star size={14} color="var(--secondary)" fill="var(--secondary)" />
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{pg.rating}</span>
+                    {loading ? (
+                        <div className="col-span-full py-16 text-center text-muted">Loading featured spaces...</div>
+                    ) : (
+                        featuredPGs.map(pg => (
+                            <Link to={`/pg/${pg._id}`} key={pg._id} style={{ textDecoration: 'none' }}>
+                                <div className="glass-panel glass-panel-hover" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ position: 'relative', height: '200px' }}>
+                                        <img src={pg.image} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            <Star size={14} color="var(--secondary)" fill="var(--secondary)" />
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{pg.rating}</span>
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                        <h3 className="text-xl" style={{ marginBottom: '0.5rem', color: 'white' }}>{pg.name}</h3>
+                                        <div className="flex items-center gap-1 text-muted text-sm" style={{ marginBottom: '1rem' }}>
+                                            <MapPin size={14} /> {pg.location}
+                                        </div>
+                                        <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span className="text-gradient" style={{ fontSize: '1.25rem', fontWeight: 700 }}>{pg.price}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                                    <h3 className="text-xl" style={{ marginBottom: '0.5rem', color: 'white' }}>{pg.name}</h3>
-                                    <div className="flex items-center gap-1 text-muted text-sm" style={{ marginBottom: '1rem' }}>
-                                        <MapPin size={14} /> {pg.location}
-                                    </div>
-                                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span className="text-gradient" style={{ fontSize: '1.25rem', fontWeight: 700 }}>{pg.price}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
+                            </Link>
+                        ))
+                    )}
                 </div>
             </section>
 

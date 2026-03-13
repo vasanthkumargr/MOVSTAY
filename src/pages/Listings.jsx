@@ -1,67 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Filter } from 'lucide-react';
 import PGCard from '../components/PGCard';
 
 const Listings = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [pgs, setPGs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const mockPGs = [
-        {
-            id: "1",
-            name: "Sunrise Premium Hostel",
-            location: "Koramangala, Bangalore",
-            price: "₹12,000/mo",
-            rating: 4.8,
-            gender: "Boys",
-            amenities: ["WiFi", "Food", "AC", "Laundry"],
-            image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "2",
-            name: "Urban Nest PG",
-            location: "HSR Layout, Bangalore",
-            price: "₹15,000/mo",
-            rating: 4.6,
-            gender: "Girls",
-            amenities: ["WiFi", "AC", "Security"],
-            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "3",
-            name: "The Co-Living Space",
-            location: "Indiranagar, Bangalore",
-            price: "₹18,000/mo",
-            rating: 4.9,
-            gender: "Co-ed",
-            amenities: ["WiFi", "Food", "AC", "Security", "Gym"],
-            image: "https://images.unsplash.com/photo-1502672260266-1c1e52ab0645?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "4",
-            name: "Cozy Stay PG",
-            location: "BTM Layout, Bangalore",
-            price: "₹9,000/mo",
-            rating: 4.2,
-            gender: "Boys",
-            amenities: ["WiFi", "Food"],
-            image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "5",
-            name: "Elite Girls Hostel",
-            location: "Koramangala, Bangalore",
-            price: "₹14,500/mo",
-            rating: 4.7,
-            gender: "Girls",
-            amenities: ["WiFi", "Food", "Security", "Laundry"],
-            image: "https://images.unsplash.com/photo-1505691938895-1758d7feb411?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-    ];
+    useEffect(() => {
+        const fetchPGs = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/hostels');
+                const data = await res.json();
+                setPGs(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Failed to fetch PGs:", err);
+                setLoading(false);
+            }
+        };
+        fetchPGs();
+    }, []);
 
-    const filteredPGs = mockPGs.filter(pg =>
-        pg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pg.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredPGs = pgs.filter(pg => {
+        const nameMatch = pg.name ? pg.name.toLowerCase().includes(searchTerm.toLowerCase()) : false;
+        const locationMatch = pg.location ? pg.location.toLowerCase().includes(searchTerm.toLowerCase()) : false;
+        return nameMatch || locationMatch;
+    });
 
     return (
         <div className="animate-fade-in py-8">
@@ -103,13 +68,17 @@ const Listings = () => {
 
                 {/* Listings Grid */}
                 <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-                    {filteredPGs.length > 0 ? (
-                        filteredPGs.map(pg => <PGCard key={pg.id} pg={pg} />)
+                    {loading ? (
+                        <div className="col-span-full py-16 text-center text-muted">Loading spaces...</div>
                     ) : (
-                        <div className="col-span-full py-16 text-center text-muted">
-                            <h3 className="text-2xl mb-2">No results found</h3>
-                            <p>Try adjusting your search criteria or explore other locations.</p>
-                        </div>
+                        filteredPGs.length > 0 ? (
+                            filteredPGs.map(pg => <PGCard key={pg._id} pg={pg} />)
+                        ) : (
+                            <div className="col-span-full py-16 text-center text-muted">
+                                <h3 className="text-2xl mb-2">No results found</h3>
+                                <p>Try adjusting your search criteria or explore other locations.</p>
+                            </div>
+                        )
                     )}
                 </div>
             </div>

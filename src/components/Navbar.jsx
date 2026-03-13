@@ -1,18 +1,30 @@
-import React from 'react';
-import { Home, Search, ClipboardList, Menu, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Home, Search, ClipboardList, Menu, X, LogOut, User, Building2 } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  const navLinks = [
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const studentNavLinks = [
     { name: 'Home', path: '/', icon: <Home size={18} /> },
     { name: 'Find PGs', path: '/listings', icon: <Search size={18} /> },
     { name: 'Dashboard', path: '/dashboard', icon: <ClipboardList size={18} /> },
     { name: 'Custom Requirements', path: '/requirements', icon: <ClipboardList size={18} /> },
   ];
+
+  // Add Owner Portal link for owners
+  const navLinks = user?.role === 'owner'
+    ? [...studentNavLinks, { name: 'Owner Portal', path: '/owner/dashboard', icon: <Building2 size={18} /> }]
+    : studentNavLinks;
 
   return (
     <nav className="glass-panel" style={{
@@ -38,9 +50,9 @@ const Navbar = () => {
           fontWeight: 'bold',
           fontSize: '1.2rem'
         }}>
-          PG
+          MS
         </div>
-        <span className="text-xl text-gradient" style={{ fontWeight: 700 }}>NextStay</span>
+        <span className="text-xl text-gradient" style={{ fontWeight: 700 }}>MOVStay</span>
       </Link>
 
       {/* Desktop Nav */}
@@ -65,7 +77,32 @@ const Navbar = () => {
             {link.name}
           </Link>
         ))}
-        <button className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>Login</button>
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span className="text-muted text-sm flex items-center gap-1">
+              <User size={16} /> {user.name || user.email?.split('@')[0]}
+              {user.role === 'owner' && (
+                <span style={{
+                  background: 'var(--gradient-primary)',
+                  color: 'white',
+                  fontSize: '0.65rem',
+                  padding: '1px 6px',
+                  borderRadius: '999px',
+                  fontWeight: 600,
+                  marginLeft: '4px'
+                }}>OWNER</span>
+              )}
+            </span>
+            <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <LogOut size={16} /> Logout
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <Link to="/login" className="btn btn-outline" style={{ padding: '0.5rem 1rem', textDecoration: 'none' }}>Student Login</Link>
+            <Link to="/owner/login" className="btn btn-primary" style={{ padding: '0.5rem 1rem', textDecoration: 'none' }}>Owner Login</Link>
+          </div>
+        )}
       </div>
 
       {/* Mobile Nav Toggle */}
@@ -119,6 +156,23 @@ const Navbar = () => {
               {link.name}
             </Link>
           ))}
+          {!user && (
+            <>
+              <Link to="/owner/login" style={{
+                textDecoration: 'none', color: 'var(--text-muted)',
+                padding: '0.75rem', borderRadius: 'var(--radius-sm)',
+                display: 'flex', alignItems: 'center', gap: '0.75rem'
+              }} onClick={() => setIsMobileMenuOpen(false)}>
+                <Building2 size={18} /> Owner Login
+              </Link>
+            </>
+          )}
+          {user && (
+            <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.75rem', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <LogOut size={18} /> Logout
+            </button>
+          )}
         </div>
       )}
     </nav>

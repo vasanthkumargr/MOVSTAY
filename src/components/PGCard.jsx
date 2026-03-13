@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 
 const PGCard = ({ pg }) => {
     return (
-        <Link to={`/pg/${pg.id}`} style={{ textDecoration: 'none' }}>
+        <Link to={`/pg/${pg._id}`} style={{ textDecoration: 'none' }}>
             <div className="glass-panel glass-panel-hover" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ position: 'relative', height: '220px' }}>
-                    <img src={pg.image} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={pg.images && pg.images.length > 0 ? pg.images[0] : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                         <Star size={14} color="var(--secondary)" fill="var(--secondary)" />
                         <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white' }}>{pg.rating}</span>
@@ -29,7 +29,7 @@ const PGCard = ({ pg }) => {
                     </div>
 
                     <div className="flex gap-2" style={{ marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                        {pg.amenities.map((amenity, index) => {
+                        {(pg.amenities || ["WiFi", "Water"]).map((amenity, index) => {
                             let Icon = Wifi;
                             if (amenity === 'Food') Icon = Coffee;
                             if (amenity === 'AC') Icon = Wind;
@@ -41,9 +41,9 @@ const PGCard = ({ pg }) => {
                                 </div>
                             );
                         })}
-                        {pg.amenities.length > 3 && (
+                        {(pg.amenities || []).length > 3 && (
                             <div style={{ display: 'flex', alignItems: 'center', padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                +{pg.amenities.length - 3} more
+                                +{(pg.amenities || []).length - 3} more
                             </div>
                         )}
                     </div>
