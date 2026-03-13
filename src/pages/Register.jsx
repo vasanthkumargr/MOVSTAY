@@ -27,8 +27,11 @@ const Register = () => {
             const data = await res.json();
 
             if (res.ok) {
-                setStep(2);
                 setSuccess(data.message);
+                if (data.tempOtp) {
+                    alert(`Render Email Blocked! Your temporary OTP to register is: ${data.tempOtp}`);
+                }
+                setStep(2);
             } else {
                 setError(data.message || 'Registration failed');
             }

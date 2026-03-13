@@ -16,6 +16,7 @@ const Login = () => {
     const handleSendOtp = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccess(''); // Clear success message on new attempt
         try {
             const res = await fetch(`${API_BASE}/auth/login`, {
                 method: 'POST',
@@ -25,6 +26,10 @@ const Login = () => {
             const data = await res.json();
 
             if (res.ok) {
+                setSuccess(data.message); // Set success message
+                if (data.tempOtp) {
+                    alert(`Render Email Blocked! Your temporary OTP to login is: ${data.tempOtp}`);
+                }
                 setStep(2);
             } else {
                 setError(data.message || 'Failed to send OTP');

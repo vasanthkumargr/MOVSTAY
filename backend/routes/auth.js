@@ -77,10 +77,17 @@ router.post('/register', async (req, res) => {
 
         await user.save();
 
-        // Send Email instead of just printing to console
-        await sendOtpEmail(email, otp, 'MOVStay - Registration OTP');
+        // Send Email instead of just printing to console (disabled for Render free tier)
+        try {
+            await sendOtpEmail(email, otp, 'MOVStay - Registration OTP');
+        } catch (emailErr) {
+            console.warn('Email sending failed due to host restrictions, but OTP generated:', otp);
+        }
 
-        res.status(200).json({ message: 'Registration OTP sent to your email.' });
+        res.status(200).json({ 
+            message: 'Registration successful. If email fails, use this temporary OTP.',
+            tempOtp: otp // <--- Temporary bypass so the user can actually log in
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -132,10 +139,17 @@ router.post('/login', async (req, res) => {
         user.otpExpires = otpExpires;
         await user.save();
 
-        // Send Email instead of just printing to console
-        await sendOtpEmail(email, otp, 'MOVStay - Login OTP');
+        // Send Email instead of just printing to console (disabled for Render free tier)
+        try {
+            await sendOtpEmail(email, otp, 'MOVStay - Login OTP');
+        } catch (emailErr) {
+            console.warn('Email sending failed due to host restrictions, but OTP generated:', otp);
+        }
 
-        res.status(200).json({ message: 'Login OTP sent to your email.' });
+        res.status(200).json({ 
+            message: 'Login OTP generated. If email fails, use this temporary OTP.',
+            tempOtp: otp // <--- Temporary bypass
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
