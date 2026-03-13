@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send, CheckCircle2, Loader2, Star, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const N8N_PROXY = 'http://localhost:5000/api/requirements/shortlist';
+const N8N_PROXY = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/requirements/shortlist`;
 
 const Requirements = () => {
     const [step, setStep] = useState('form'); // 'form' | 'loading' | 'results' | 'error'
@@ -29,7 +29,7 @@ const Requirements = () => {
 
         try {
             // Step 1: Fetch all PGs from backend
-            const pgRes = await fetch('http://localhost:5000/api/hostels');
+            const pgRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/hostels`);
             const allPGs = await pgRes.json();
 
             // Step 2: Filter by core requirements only (NOT additional requirements/amenities textarea)

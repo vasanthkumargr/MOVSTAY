@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const Home = () => {
     const navigate = useNavigate();
 
@@ -16,7 +18,7 @@ const Home = () => {
     useEffect(() => {
         const fetchPGs = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/hostels');
+                const res = await fetch(`${API_BASE}/hostels`);
                 const data = await res.json();
                 // Just take first 3 for featured on home
                 setFeaturedPGs(data.slice(0, 3));

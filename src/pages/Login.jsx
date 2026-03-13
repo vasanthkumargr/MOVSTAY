@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, KeyRound, ArrowRight } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
@@ -15,7 +17,7 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/api/auth/login', {
+            const res = await fetch(`${API_BASE}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -36,7 +38,7 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/api/auth/login-verify', {
+            const res = await fetch(`${API_BASE}/auth/login-verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp })

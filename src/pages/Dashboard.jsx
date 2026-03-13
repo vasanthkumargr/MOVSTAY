@@ -4,6 +4,8 @@ import { Navigate } from 'react-router-dom';
 import { Wallet, Home, CalendarCheck, TrendingUp, User } from 'lucide-react';
 import PGCard from '../components/PGCard';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const Dashboard = () => {
     const { user } = useAuth();
     const [pgs, setPGs] = useState([]);
@@ -14,7 +16,7 @@ const Dashboard = () => {
 
         const fetchPGs = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/hostels');
+                const res = await fetch(`${API_BASE}/hostels`);
                 const data = await res.json();
                 setPGs(data);
                 setLoading(false);

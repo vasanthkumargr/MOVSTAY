@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { MapPin, Star, Wifi, Coffee, Wind, Shield, Monitor as MonitorPlay, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const PGDetail = () => {
     const { id } = useParams();
     const { user } = useAuth();
@@ -17,7 +19,7 @@ const PGDetail = () => {
     useEffect(() => {
         const fetchPG = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/hostels/${id}`);
+                const res = await fetch(`${API_BASE}/hostels/${id}`);
                 const data = await res.json();
                 setPg(data);
                 setLoading(false);
@@ -34,7 +36,7 @@ const PGDetail = () => {
         setBookingLoading(true);
         setBookingError('');
         try {
-            const res = await fetch('http://localhost:5000/api/bookings', {
+            const res = await fetch(`${API_BASE}/bookings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

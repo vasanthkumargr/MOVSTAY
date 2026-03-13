@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Filter } from 'lucide-react';
 import PGCard from '../components/PGCard';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const Listings = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [pgs, setPGs] = useState([]);
@@ -10,7 +12,7 @@ const Listings = () => {
     useEffect(() => {
         const fetchPGs = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/hostels');
+                const res = await fetch(`${API_BASE}/hostels`);
                 const data = await res.json();
                 setPGs(data);
                 setLoading(false);
