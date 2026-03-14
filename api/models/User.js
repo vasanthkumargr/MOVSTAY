@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: false,
+    required: false, // Optional: Google-auth or OTP-auth users won't have a password initially
   },
   otp: {
     type: String,

@@ -14,7 +14,7 @@ const Listings = () => {
             try {
                 const res = await fetch(`${API_BASE}/hostels`);
                 const data = await res.json();
-                setPGs(data);
+                setPGs(Array.isArray(data) ? data : []);
                 setLoading(false);
             } catch (err) {
                 console.error("Failed to fetch PGs:", err);
